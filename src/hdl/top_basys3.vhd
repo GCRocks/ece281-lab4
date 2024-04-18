@@ -92,21 +92,67 @@ end top_basys3;
 architecture top_basys3_arch of top_basys3 is 
   
 	-- declare components and signals
-
+  component sevenSegDecoder is
+    port(
+       i_D : in std_logic_vector (3 downto 0);
+       o_S : out std_logic_vector (6 downto 0)
+    );    
+  end component sevenSegDecoder;
   
+  signal w_7SD_EN_n : std_logic; --wire to connect button to 7SD enable (active-low)
+  signal w_clk, w_reset : std_logic := '0';
+  --signal w_D3, w_D2, w_D1, w_D0, f_data : std_logic_vector(k_IO_WIDTH-1 downto 0);
+  signal f_sel_n : std_logic_vector(3 downto 0);
+  signal w_floor : std_logic_vector(3 downto 0);
+  signal w_seg : std_logic_vector(6 downto 0);
+  
+  component elevator_controller_fsm is
+    Port ( 
+        i_clk     : in  STD_LOGIC;
+        i_reset   : in  STD_LOGIC;
+        i_stop    : in  STD_LOGIC;
+        i_up_down : in  STD_LOGIC;
+        o_floor   : out STD_LOGIC_VECTOR (3 downto 0)           
+    );
+  end component elevator_controller_fsm;  
+  
+  	type sm_floor is (s_floor1, s_floor2, s_floor3, s_floor4);
+    signal f_Q, f_Q_next: sm_floor;
+    
 begin
 	-- PORT MAPS ----------------------------------------
 
+	-----------------------------------------------------	
+	sevenSegDecoder_inst: sevenSegDecoder
+	port map(
+	   i_D => w_floor,
+	   o_S => w_seg
+	);	
+	
+	elevator_controller_fsm_inst : elevator_controller_fsm
+	port map(
+	   i_clk => w_clk,
+	   i_reset => btnR or btnU,
+	   i_stop => sw(0),
+	   i_up_down => sw(1),
+	   o_floor => w_floor
+	);
 	
 	
 	-- CONCURRENT STATEMENTS ----------------------------
 	
 	-- LED 15 gets the FSM slow clock signal. The rest are grounded.
-	
+	led(15) <= w_clk;
+	led(14 downto 0) <= x"0";
 
 	-- leave unused switches UNCONNECTED. Ignore any warnings this causes.
 	
+	
 	-- wire up active-low 7SD anodes (an) as required
 	-- Tie any unused anodes to power ('1') to keep them off
-	
+	w_7SD_EN_n <= not (btnU or btnR);
+    an(2)  <= '0'; 
+    an(1 downto 0) <= "1";
+    an(3) <= '1';
+    	
 end top_basys3_arch;

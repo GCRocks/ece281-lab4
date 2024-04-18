@@ -102,4 +102,3 @@ begin
 			   "1110";
 		
 end behavioral;
-
