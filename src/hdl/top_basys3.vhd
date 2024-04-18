@@ -143,7 +143,7 @@ begin
 	
 	-- LED 15 gets the FSM slow clock signal. The rest are grounded.
 	led(15) <= w_clk;
-	led(14 downto 0) <= x"0";
+	led(14 downto 0) <= "000000000000000";
 
 	-- leave unused switches UNCONNECTED. Ignore any warnings this causes.
 	
@@ -152,7 +152,7 @@ begin
 	-- Tie any unused anodes to power ('1') to keep them off
 	w_7SD_EN_n <= not (btnU or btnR);
     an(2)  <= '0'; 
-    an(1 downto 0) <= "1";
+    an(1 downto 0) <= "11";
     an(3) <= '1';
     	
 end top_basys3_arch;
