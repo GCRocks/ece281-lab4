@@ -53,7 +53,7 @@
 --|    b_<port name>            = on-chip bidirectional port
 --|    i_<port name>            = on-chip input port
 --|    o_<port name>            = on-chip output port
---|    c_<signal name>          = combinatorial signal
+--|    c_<signal name>          = combinatorial signal 
 --|    f_<signal name>          = synchronous signal
 --|    ff_<signal name>         = pipeline stage (ff_, fff_, etc.)
 --|    <signal name>_n          = active low signal
