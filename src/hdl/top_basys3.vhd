@@ -104,7 +104,6 @@ architecture top_basys3_arch of top_basys3 is
   --signal w_D3, w_D2, w_D1, w_D0, f_data : std_logic_vector(k_IO_WIDTH-1 downto 0);
   signal f_sel_n : std_logic_vector(3 downto 0);
   signal w_floor : std_logic_vector(3 downto 0);
-  signal w_seg : std_logic_vector(6 downto 0);
   
   component elevator_controller_fsm is
     Port ( 
@@ -136,7 +135,7 @@ begin
 	sevenSegDecoder_inst: sevenSegDecoder
 	port map(
 	   i_D => w_floor,
-	   o_S => w_seg
+	   o_S => seg
 	);	
 	
 	elevator_controller_fsm_inst : elevator_controller_fsm
