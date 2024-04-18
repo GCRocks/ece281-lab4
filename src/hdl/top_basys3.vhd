@@ -119,6 +119,16 @@ architecture top_basys3_arch of top_basys3 is
   	type sm_floor is (s_floor1, s_floor2, s_floor3, s_floor4);
     signal f_Q, f_Q_next: sm_floor;
     
+   component clock_divider is
+    generic ( constant k_DIV : natural := 12500000    ); -- How many clk cycles until slow clock toggles
+                                               -- Effectively, you divide the clk double this 
+                                               -- number (e.g., k_DIV := 2 --> clock divider of 4)
+    port (      i_clk    : in std_logic;
+                i_reset  : in std_logic;           -- asynchronous
+                o_clk    : out std_logic           -- divided (slow) clock
+    );
+end component clock_divider;    
+    
 begin
 	-- PORT MAPS ----------------------------------------
 
@@ -138,6 +148,12 @@ begin
 	   o_floor => w_floor
 	);
 	
+	clock_divider_inst : clock_divider
+	port map(
+	   i_clk => clk,
+	   i_reset => btnL or btnU,
+	   o_clk => w_clk
+	);
 	
 	-- CONCURRENT STATEMENTS ----------------------------
 	
