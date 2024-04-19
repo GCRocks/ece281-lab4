@@ -75,7 +75,7 @@ entity elevator_controller_fsm is
            i_reset   : in  STD_LOGIC;
            i_stop    : in  STD_LOGIC;
            i_up_down : in  STD_LOGIC;
-           o_floor   : out STD_LOGIC_VECTOR (3 downto 0)		   
+           o_floor   : out STD_LOGIC_VECTOR (4 downto 0)		   
 		 );
 end elevator_controller_fsm;
 

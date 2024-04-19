@@ -24,7 +24,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity sevenSegDecoder is
       port(
-         i_D : in std_logic_vector (3 downto 0);
+         i_D : in std_logic_vector (4 downto 0);
          o_S : out std_logic_vector (6 downto 0)
       ); 
 end sevenSegDecoder;
@@ -45,26 +45,35 @@ begin
                         (i_D = x"4"))
                         else '0';
                         
-    c_Sb <= '0';
+    c_Sb <= '1' when (  (i_D = x"5") or
+                        (i_D = x"6"))
+                        else '0';
                         
-    c_Sc <= '1' when   (i_D = x"2")
+    c_Sc <= '1' when    (i_D = x"2")
                         else '0';
                     
     c_Sd <= '1' when (  (i_D = x"1") or
-                        (i_D = x"4"))
+                        (i_D = x"4") or
+                        (i_D = x"7"))
                         else '0';
                         
     c_Se <= '1' when (  (i_D = x"1") or
                         (i_D = x"3") or
-                        (i_D = x"4"))
+                        (i_D = x"4") or
+                        (i_D = x"5") or
+                        (i_D = x"7") or
+                        (i_D = x"9"))
                         else '0';
                 
     c_Sf <= '1' when (  (i_D = x"1") or
                         (i_D = x"2") or
-                        (i_D = x"3"))
+                        (i_D = x"3") or
+                        (i_D = x"7"))
                         else '0';
                         
-    c_Sg <= '1' when   (i_D = x"1")
+    c_Sg <= '1' when (  (i_D = x"0") or
+                        (i_D = x"1") or
+                        (i_D = x"7"))
                         else '0';
                 
     o_S(0) <= c_Sa;

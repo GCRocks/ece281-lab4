@@ -94,15 +94,13 @@ architecture top_basys3_arch of top_basys3 is
 	-- declare components and signals
   component sevenSegDecoder is
     port(
-       i_D : in std_logic_vector (3 downto 0);
+       i_D : in std_logic_vector (4 downto 0);
        o_S : out std_logic_vector (6 downto 0)
     );    
   end component sevenSegDecoder;
   
   signal w_7SD_EN_n : std_logic; --wire to connect button to 7SD enable (active-low)
   signal w_clk, w_reset : std_logic := '0';
-  --signal w_D3, w_D2, w_D1, w_D0, f_data : std_logic_vector(k_IO_WIDTH-1 downto 0);
-  signal f_sel_n : std_logic_vector(3 downto 0);
   signal w_floor : std_logic_vector(3 downto 0);
   
   component elevator_controller_fsm is
@@ -111,7 +109,7 @@ architecture top_basys3_arch of top_basys3 is
         i_reset   : in  STD_LOGIC;
         i_stop    : in  STD_LOGIC;
         i_up_down : in  STD_LOGIC;
-        o_floor   : out STD_LOGIC_VECTOR (3 downto 0)           
+        o_floor   : out STD_LOGIC_VECTOR (4 downto 0)           
     );
   end component elevator_controller_fsm;  
   
@@ -126,7 +124,24 @@ architecture top_basys3_arch of top_basys3 is
                 i_reset  : in std_logic;           -- asynchronous
                 o_clk    : out std_logic           -- divided (slow) clock
     );
-end component clock_divider;    
+end component clock_divider;
+
+component TDM4 is
+	generic ( constant k_WIDTH : natural  := 4); -- bits in input and output
+    Port ( i_clk		: in  STD_LOGIC;
+           i_reset		: in  STD_LOGIC; -- asynchronous
+           i_D3 		: in  STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+		   i_D2 		: in  STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+		   i_D1 		: in  STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+		   i_D0 		: in  STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+		   o_data		: out STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+		   o_sel		: out STD_LOGIC_VECTOR (3 downto 0)	-- selected data line (one-cold)
+	);
+end component TDM4;  
+
+signal w_tdm : std_logic_vector (3 downto 0);
+signal w_D3, w_D2, w_D1, w_D0, f_data: std_logic_vector (4 downto 0);
+signal f_sel_n : std_logic_vector (3 downto 0);  
     
 begin
 	-- PORT MAPS ----------------------------------------
@@ -154,6 +169,18 @@ begin
 	   o_clk => w_clk
 	);
 	
+	TDM4_inst : TDM4
+        port map( 
+           i_clk => clk,
+           i_reset => btnU, -- asynchronous
+           i_D3 => w_floor,
+           i_D2 => w_floor,
+           i_D1 => w_floor,
+           i_D0 => w_floor,
+           o_data => f_data,
+           o_sel => f_sel_n    -- selected data line (one-cold)
+        );
+	
 	-- CONCURRENT STATEMENTS ----------------------------
 	
 	-- LED 15 gets the FSM slow clock signal. The rest are grounded.
@@ -166,8 +193,7 @@ begin
 	-- wire up active-low 7SD anodes (an) as required
 	-- Tie any unused anodes to power ('1') to keep them off
 	w_7SD_EN_n <= not (btnU or btnR);
-    an(2)  <= '0'; 
+    an(3 downto 2)  <= "00"; 
     an(1 downto 0) <= "11";
-    an(3) <= '1';
     	
 end top_basys3_arch;
